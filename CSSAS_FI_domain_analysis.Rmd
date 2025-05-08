@@ -1,0 +1,147 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(dplyr)
+
+data <- readxl::read_excel("/Users/ankushidutta/Downloads/Group5 (1).xlsx")
+```
+
+
+## CSSAS vs graduate
+
+```{r}
+data %>%
+  group_by(graduate) %>%
+  summarise(
+    count = n(),
+    mean_CSSAS = mean(CSSAS, na.rm = TRUE),
+    sd_CSSAS = sd(CSSAS, na.rm = TRUE)
+  )
+```
+
+```{r}
+t.test(CSSAS ~ graduate, data = data, var.equal = FALSE)
+```
+
+## CSSAS vs mplan
+
+```{r}
+data %>%
+  group_by(mplan) %>%
+  summarise(
+    count = n(),
+    mean_CSSAS = mean(CSSAS, na.rm = TRUE),
+    sd_CSSAS = sd(CSSAS, na.rm = TRUE)
+  )
+
+```
+
+```{r}
+t.test(CSSAS ~ mplan, data = data, var.equal = FALSE)
+```
+T-Test shows a statistically significant difference in mean CSSAS scores, with non-meal-plan students reporting higher stress (p < 2.2e-16). 95% confidence interval for the difference in means was [1.34, 1.80], indicating a reliable difference between the groups.
+
+
+## CSSAS vs. loans
+
+```{r}
+data %>%
+  group_by(loans) %>%
+  summarise(
+    count = n(),
+    mean_CSSAS = mean(CSSAS, na.rm = TRUE),
+    sd_CSSAS = sd(CSSAS, na.rm = TRUE)
+  )
+
+t.test(CSSAS ~ loans, data = data, var.equal = FALSE)
+```
+
+
+## CSSAS vs. grade (Low vs High GPA)
+
+```{r}
+grade_data <- data %>%
+  filter(grade %in% c(1, 4)) %>%
+  mutate(gpa_group = ifelse(grade == 1, "low", "high"))
+
+grade_data %>%
+  group_by(gpa_group) %>%
+  summarise(
+    count = n(),
+    mean_CSSAS = mean(CSSAS, na.rm = TRUE),
+    sd_CSSAS = sd(CSSAS, na.rm = TRUE)
+  )
+```
+
+
+```{r}
+t.test(CSSAS ~ gpa_group, data = grade_data, var.equal = FALSE)
+```
+
+## FI vs graduate
+
+```{r}
+data %>%
+  group_by(graduate) %>%
+  summarise(
+    count = n(),
+    FI_mean = mean(FI, na.rm = TRUE),
+    FI_sd = sd(FI, na.rm = TRUE)
+  )
+
+table(data$graduate, data$FI) %>% chisq.test()
+```
+
+## FI vs mplan
+
+```{r}
+data %>%
+  group_by(mplan) %>%
+  summarise(
+    count = n(),
+    FI_mean = mean(FI, na.rm = TRUE),
+    FI_sd = sd(FI, na.rm = TRUE)
+  )
+table(data$mplan, data$FI) %>% chisq.test()
+```
+
+## FI vs loans
+
+```{r}
+data %>%
+  group_by(loans) %>%
+  summarise(
+    count = n(),
+    FI_mean = mean(FI, na.rm = TRUE),
+    FI_sd = sd(FI, na.rm = TRUE)
+  )
+table(data$loans, data$FI) %>% chisq.test()
+```
+
+## FI vs grade (Low vs High GPA)
+
+```{r}
+grade_FI <- data %>%
+  filter(grade %in% c(1, 4)) %>%
+  mutate(gpa_group = ifelse(grade == 1, "low", "high"))
+
+grade_FI %>%
+  group_by(gpa_group) %>%
+  summarise(
+    count = n(),
+    FI_mean = mean(FI, na.rm = TRUE),
+    FI_sd = sd(FI, na.rm = TRUE)
+  )
+table(grade_FI$gpa_group, grade_FI$FI) %>% chisq.test()
+```
+
