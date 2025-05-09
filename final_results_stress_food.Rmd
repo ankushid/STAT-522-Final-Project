@@ -1,0 +1,62 @@
+---
+title: "STAT 582 Group Project Pradumna"
+author: "Pradumna"
+date: "2025-05-08"
+output: pdf_document
+---
+
+```{r domain 1}
+# Load the data
+data <- read_excel("C:/Users/pradu/Downloads/Group5.xlsx")
+
+str(data)
+avg_overall<-mean(data$CSSAS)
+se_overall<-sqrt(1 - 5462/43300)*sqrt(5462/5462^2)*sqrt(sd(data$CSSAS)/(5462 -1))
+
+set.seed(123)
+
+#case 1: Final Year, not employed with student loans(Job Stress)
+data$fourthyear<-ifelse(data$year=="4" & data$loans==1 & data$employ==0,1,0)
+
+d1<-sum(data$fourthyear)
+y_1<-sum(data$CSSAS*data$fourthyear)/d1
+ss_1<-sum((data$CSSAS[data$fourthyear==1]-y_1)^2)
+se_1<-sqrt(1 - 5462/43300)*sqrt(5462/d1^2)*sqrt(ss_1/(5462 -1))
+ci_1<-c(y_1-qt(.975,d1-1)*se_1,y_1+qt(.975,d1-1)*se_1)
+
+t.test(CSSAS ~ fourthyear, data = data, var.equal = FALSE)
+
+```
+
+
+```{r domain 2}
+#case 2:mplan=0,poor grades and have loans(proxy for poor students)
+average_CSSAS_poor_data <- data %>%
+  filter(mplan == 0, grade == 1, loans == 1)
+
+data$mplan_new<-ifelse(data$mplan==0 & data$loans==1 & data$grade==1,1,0)
+d2<-sum(data$mplan_new)
+y_2<-sum(data$CSSAS*data$mplan_new)/d2
+ss_2<-sum((data$CSSAS[data$mplan_new==1]-y_2)^2)
+se_2<-sqrt(1 - 5462/43300)*sqrt(5462/d1^2)*sqrt(ss_2/(5462 -1))
+ci_2<-c(y_2-qt(.975,d2-1)*se_2,y_2+qt(.975,d2-1)*se_2)
+
+t.test(CSSAS ~ mplan_new, data = data, var.equal = FALSE)
+```
+
+
+```{r domain 3}
+#case 3: First year stress levels with worst scenario
+
+
+data$worst<-ifelse(data$year==1 & data$loans==1 & data$mplan==0 & data$employ==0 & data$grade==1,1,0)
+d3<-sum(data$worst)
+y_3<-sum(data$CSSAS*data$worst)/d3
+ss_3<-sum((data$CSSAS[data$worst==1]-y_3)^2)
+se_3<-sqrt(1 - 5462/43300)*sqrt(5462/d1^2)*sqrt(ss_3/(5462 -1))
+ci_3<-c(y_3-qt(.975,d3-1)*se_3,y_3+qt(.975,d3-1)*se_3)
+
+t.test(CSSAS ~ worst, data = data, var.equal = FALSE)
+
+```
+
