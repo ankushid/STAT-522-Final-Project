@@ -1,0 +1,147 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(dplyr)
+data <- readxl::read_excel("/Users/ankushidutta/Downloads/Group5 (1).xlsx")
+```
+
+## CSSAS vs graduate
+
+```{r}
+data %>%
+  group_by(graduate) %>%
+  summarise(
+    count = n(),
+    mean_CSSAS = mean(CSSAS, na.rm = TRUE),
+    var_CSSAS = var(CSSAS, na.rm = TRUE),
+    SE_CSSAS = sqrt(var_CSSAS / count)
+  )
+```
+
+```{r}
+t.test(CSSAS ~ graduate, data = data, var.equal = FALSE)
+```
+
+## CSSAS vs mplan
+
+```{r}
+data %>%
+  group_by(mplan) %>%
+  summarise(
+    count = n(),
+    mean_CSSAS = mean(CSSAS, na.rm = TRUE),
+    var_CSSAS = var(CSSAS, na.rm = TRUE),
+    SE_CSSAS = sqrt(var_CSSAS / count)
+  )
+
+```
+
+```{r}
+t.test(CSSAS ~ mplan, data = data, var.equal = FALSE)
+```
+
+## CSSAS vs. loans
+
+```{r}
+data %>%
+  group_by(loans) %>%
+  summarise(
+    count = n(),
+    mean_CSSAS = mean(CSSAS, na.rm = TRUE),
+    var_CSSAS = var(CSSAS, na.rm = TRUE),
+    SE_CSSAS = sqrt(var_CSSAS / count)
+  )
+
+t.test(CSSAS ~ loans, data = data, var.equal = FALSE)
+```
+
+
+## CSSAS vs. grade
+
+```{r}
+data %>%
+  group_by(grade) %>%
+  summarise(
+    count = n(),
+    mean_CSSAS = mean(CSSAS, na.rm = TRUE),
+    var_CSSAS = var(CSSAS, na.rm = TRUE),
+    SE_CSSAS = sqrt(var_CSSAS / count)
+  )
+```
+
+
+```{r}
+anova_res <- aov(CSSAS ~ as.factor(grade), data = data)
+summary(anova_res)
+```
+
+## FI vs graduate
+
+```{r}
+data %>%
+  group_by(graduate) %>%
+  summarise(
+    count = n(),
+    FI_mean = mean(FI, na.rm = TRUE),
+    FI_var = var(FI, na.rm = TRUE),
+    FI_SE = sqrt(FI_var / count)
+  )
+
+table(data$graduate, data$FI) %>% chisq.test()
+```
+
+## FI vs mplan
+
+```{r}
+data %>%
+  group_by(mplan) %>%
+  summarise(
+    count = n(),
+    FI_mean = mean(FI, na.rm = TRUE),
+    FI_var = var(FI, na.rm = TRUE),
+    FI_SE = sqrt(FI_var / count)
+  )
+table(data$mplan, data$FI) %>% chisq.test()
+```
+
+## FI vs loans
+
+```{r}
+data %>%
+  group_by(loans) %>%
+  summarise(
+    count = n(),
+    FI_mean = mean(FI, na.rm = TRUE),
+    FI_var = var(FI, na.rm = TRUE),
+    FI_SE = sqrt(FI_var / count)
+  )
+
+table(data$loans, data$FI) %>% chisq.test()
+```
+
+## FI vs grade
+
+```{r}
+data %>%
+  group_by(grade) %>%
+  summarise(
+    count = n(),
+    FI_mean = mean(FI, na.rm = TRUE),
+    FI_var = var(FI, na.rm = TRUE),
+    FI_SE = sqrt(FI_var / count)
+  )
+
+anova_res <- aov(FI ~ as.factor(grade), data = data)
+summary(anova_res)
+```
+
